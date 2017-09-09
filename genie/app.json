@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "warren-chatbot",
-    "description": "An empty new project",
-    "slug": "warren-chatbot",
+    "name": "genie",
+    "description": "Simplifying investments",
+    "slug": "genie",
     "privacy": "public",
     "sdkVersion": "20.0.0",
     "version": "1.0.0",

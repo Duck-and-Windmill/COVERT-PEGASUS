@@ -1,6 +1,7 @@
 import React from 'react';
-import { AppRegistry, StyleSheet, Text, View, Image, Navigator, TouchableHighlight, Button } from 'react-native';
+import { AppRegistry, StyleSheet, Text, View, Image, Navigator, TouchableHighlight, Button, TextInput } from 'react-native';
 import { StackNavigator } from 'react-navigation';
+import ChatBot from 'react-native-chatbot';
 
 class HomeScreen extends React.Component {
     static navigationOptions = {
@@ -10,8 +11,6 @@ class HomeScreen extends React.Component {
         const { navigate } = this.props.navigation;
         return (
             <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end' }}>
-                <Text style={styles.container}>Hello, Welcome Screen!</Text>
-
                 <TouchableHighlight
                     title='Genie Chat'
                     onPress = {() => navigate('Chat')}
@@ -28,9 +27,21 @@ class HomeScreen extends React.Component {
 class ChatScreen extends React.Component {
     static navigationOptions = {
         title: 'Genie Chat',
-    };
+    }
     render() {
-        return <Text style={styles.container}>Hello, Genie!</Text>;
+        const steps = [
+            {
+                id: '0',
+                message: 'Welcome to react chatbot!',
+                trigger: '1',
+            },
+            {
+                id: '1',
+                message: 'Bye!',
+                end: true,
+            },
+        ];
+        return <ChatBot steps={steps} />
     }
 }
 
@@ -59,7 +70,7 @@ const genieButtStyles = StyleSheet.create({
         width: 70,
         height: 70,
         padding: 10,
-        float: right;
+        right: 0,
     }
 });
 

@@ -5,6 +5,7 @@ import { COLOR, ThemeProvider } from 'react-native-material-ui';
 import LoginScreen from './LoginScreen';
 import AppScreen from './AppScreen';
 import SettingsScreen from './SettingsScreen'
+import ChatBotScreen from './ChatBotScreen'
 
 const uiTheme = {
     palette: {
@@ -18,6 +19,25 @@ const uiTheme = {
 };
 
 export default class Main extends React.Component {
+    _chat() {
+      if (this.state.isLoading) return;
+
+      this.setState({ isLoading: true });
+
+      Animated.timing(
+          this.growAnimated,
+          {
+              toValue: 1,
+              duration: 300,
+              easing: Easing.linear,
+          }
+      ).start();
+
+      setTimeout(() => {
+          Actions.ChatScreen();
+      }, 500);
+  }
+
   render() {
     return (
       <ThemeProvider uiTheme={uiTheme}>
@@ -36,6 +56,11 @@ export default class Main extends React.Component {
             />
             <Scene key="settingsScreen"
               component={SettingsScreen}
+              animation='fade'
+              hideNavBar={true}
+            />
+            <Scene key="chatbotScreen"
+              component={ChatBotScreen}
               animation='fade'
               hideNavBar={true}
             />

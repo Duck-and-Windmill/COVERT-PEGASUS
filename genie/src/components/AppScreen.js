@@ -16,7 +16,9 @@ import { connect } from 'react-redux';
 import Drawer from 'react-native-drawer';
 import SideMenu from 'react-native-side-menu'
 import { Card } from 'react-native-material-ui';
-import { VictoryBar } from "victory-native";
+import { VictoryCandlestick, VictoryAxis, VictoryTheme } from 'victory-native';
+
+import _ from 'lodash'
 
 import ControlPanel from './ControlPanel'
 
@@ -40,6 +42,7 @@ class AppScreen extends Component {
         this.state = {
             isLoading: false,
             positions: [],
+            historicals: [],
             equity: ''
         };
         this.growAnimated = new Animated.Value(0);
@@ -187,11 +190,15 @@ class AppScreen extends Component {
     }
 
     _fetchHistoricals() {
+
+      var self = this;
       var query = this.props.positions.map(function(position){
           return position.symbol;
       }).join(",");
 
-      fetch('https://api.robinhood.com/quotes/historicals/?symbols='+query+'&interval=week&span=5year', {
+      query = this.props.positions[0].symbol;
+
+      fetch('https://api.robinhood.com/quotes/historicals/?symbols='+query+'&interval=10minute&span=day', {
         method: 'GET',
         headers: {
           'Accept': 'application/json'
@@ -199,7 +206,56 @@ class AppScreen extends Component {
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log('historicals', responseJson);
+        var portfolioHistoricals = responseJson.results;
+
+        var reduced = portfolioHistoricals.map(function(stock){
+          return stock.historicals.map(function(week){
+            return {
+              x: new Date(week.begins_at),
+              open: week.open_price,
+              close: week.close_price,
+              high: week.high_price,
+              low: week.low_price
+            }
+          });
+        });
+
+        var merged = [].concat.apply([], reduced);
+
+        this.setState({ historicals: merged });
+
+        /*var hist = _.groupBy(merged, "x");
+
+        var finalCleaned = []
+
+        Object.keys(hist).forEach(function(date, index, arr) {
+          var dateFinal = {
+            close: 0,
+            high: 0,
+            low: 0,
+            open: 0,
+            x: date
+          }
+
+          hist[date].forEach(function(info, i){
+            dateFinal.close += parseInt(info.close)
+            dateFinal.high += parseInt(info.high)
+            dateFinal.low += parseInt(info.low)
+            dateFinal.open += parseInt(info.open)
+
+            console.log(dateFinal)
+
+            if (i >= hist[date].length) {
+              finalCleaned.push(dateFinal)
+            } else if (i >= (hist[date].length - 1) && index >= (Object.keys(hist).length - 1)) {
+              self.setState({ historicals: finalCleaned });
+
+              console.log('historicals', finalCleaned);
+            }
+          })
+
+        });*/
+
       })
       .catch((error) => {
         console.error(error);
@@ -232,7 +288,10 @@ class AppScreen extends Component {
                   <View style={styles.backgroundContainer}>
                     <View style={styles.contentContainer}>
                       <Card>
-                        <VictoryBar/>
+                        <VictoryCandlestick
+                          candleColors={{ positive: "#5f5c5b", negative: "#c43a31" }}
+                          data={this.state.historicals}
+                        />
                       </Card>
                     </View>
 

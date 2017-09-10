@@ -108,7 +108,7 @@ export default class ControlPanel extends Component {
             onPress={() => {
               this._settings();
             }}
-            title="Settings"
+            title="Account"
             style={styles.button}
           />
           <Button

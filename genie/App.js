@@ -1,21 +1,30 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { /*Dimensions,*/ AppRegistry, StyleSheet, Text, View, Image, Navigator, TouchableHighlight, Button, TextInput } from 'react-native';
+import { StackNavigator } from 'react-navigation';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import ChatBot from 'react-native-chatbot';
+
+import genieApp from './src/reducers';
+import Main from './src/components/Main';
+
+const store = createStore(genieApp)
+/*const { height, width } = Dimensions.get('window');*/
 
 export default class App extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
-    );
-  }
+    /*static navigationOptions = {
+        title: 'Welcome. Plz log in',
+    };*/
+    render() {
+        /*const { navigate } = this.props.navigation;*/
+        return (
+            <Provider store={store}>
+               <Main />
+            </Provider>
+
+
+        );
+    }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+AppRegistry.registerComponent('App', () => App);

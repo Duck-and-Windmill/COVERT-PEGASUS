@@ -12,16 +12,16 @@ with open('companylist.csv') as f:
 
 with open('securities.txt', 'r+') as final_f:
 	for i in range(0, len(columns['Symbol'])):
-		a_line = '"' + columns['Symbol'][i] + '","' + columns['Name'][i] + '"'
+		a_line = '"' + columns['Symbol'][i] + '","' + columns['Symbol'][i].lower() + '","' + columns['Name'][i] + '","' + columns['Name'][i].lower() + '"'
 
 		if(columns['Name'][i][-7:] == ", Inc. " or columns['Name'][i][-7:] == ", Ltd. "): # forgive me father for i have sinned
-			a_line += ',"' + columns['Name'][i][0:-7] + '"'								  # i just don't want to learn regex tonight
+			a_line += ',"' + columns['Name'][i][0:-7] + '","' + columns['Name'][i][0:-7].lower() + '"'								  # i just don't want to learn regex tonight
 		elif(columns['Name'][i][-6:] == ", Inc." or columns['Name'][i][-6:] == ", Ltd." or columns['Name'][i][-6:] == " Corp."):
-			a_line += ',"' + columns['Name'][i][0:-6] + '"' 
+			a_line += ',"' + columns['Name'][i][0:-6] + '","' + columns['Name'][i][0:-6].lower() + '"' 
 		elif(columns['Name'][i][-5:] == " Inc." or columns['Name'][i][-5:] == " Ltd." or columns['Name'][i][-5:] == " Corp"):
-			a_line += ',"' + columns['Name'][i][0:-5] + '"'
+			a_line += ',"' + columns['Name'][i][0:-5] + '","' + columns['Name'][i][0:-5].lower() + '"'
 		elif(columns['Name'][i][-4:] == " Inc" or columns['Name'][i][-4:] == " Ltd"):
-			a_line += ',"' + columns['Name'][i][0:-4]
+			a_line += ',"' + columns['Name'][i][0:-4] + '","' + columns['Name'][i][0:-4].lower() + '"'
 
 		print(a_line)
 		final_f.write(a_line + '\n')

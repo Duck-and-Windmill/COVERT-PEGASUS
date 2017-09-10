@@ -85,6 +85,25 @@ export default class ControlPanel extends Component {
       }, 500);
   }
 
+  _chatbot() {
+      if (this.state.isLoading) return;
+
+      this.setState({ isLoading: true });
+
+      Animated.timing(
+          this.growAnimated,
+          {
+              toValue: 1,
+              duration: 300,
+              easing: Easing.linear,
+          }
+      ).start();
+
+      setTimeout(() => {
+          Actions.chatbotScreen();
+      }, 500);
+  }
+
   render() {
     const changeScale = this.growAnimated.interpolate({
             inputRange: [0, 1],
@@ -109,6 +128,13 @@ export default class ControlPanel extends Component {
               this._settings();
             }}
             title="Account"
+            style={styles.button}
+          />
+          <Button
+            onPress={() => {
+              this._chatbot();
+            }}
+            title="Genie"
             style={styles.button}
           />
           <Button

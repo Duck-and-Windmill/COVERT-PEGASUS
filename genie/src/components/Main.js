@@ -5,6 +5,7 @@ import { COLOR, ThemeProvider } from 'react-native-material-ui';
 import LoginScreen from './LoginScreen';
 import AppScreen from './AppScreen';
 import SettingsScreen from './SettingsScreen'
+import ChatBotScreen from './ChatBotScreen'
 
 const uiTheme = {
     palette: {
@@ -58,16 +59,12 @@ export default class Main extends React.Component {
               animation='fade'
               hideNavBar={true}
             />
-          </Scene>
-
-          <Button
-            onPress={() => {
-              this._chatBot();
-            }}
-            title="ChatBot"
-            style={styles.button}
+            <Scene key="chatbotScreen"
+              component={ChatBotScreen}
+              animation='fade'
+              hideNavBar={true}
             />
-
+          </Scene>
         </Router>
       </ThemeProvider>
     );

@@ -13,7 +13,6 @@ import {
 import Dimensions from 'Dimensions';
 import { Actions, ActionConst } from 'react-native-router-flux';
 import { connect } from 'react-redux';
-import Drawer from 'react-native-drawer';
 import SideMenu from 'react-native-side-menu'
 import { Card } from 'react-native-material-ui';
 import { VictoryBar } from "victory-native";
@@ -190,23 +189,6 @@ const styles = StyleSheet.create({
         height: 24,
     }
 });
-
-const drawerStyles = {
-  drawer: { 
-    shadowColor: '#000000', 
-    shadowOpacity: 0.8, 
-    shadowRadius: 3,
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-  },
-  main: {
-    paddingLeft: 3,
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-  },
-}
 
 const mapStateToProps = (state) => ({
   token: state.token

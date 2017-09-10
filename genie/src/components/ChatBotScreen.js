@@ -14,7 +14,29 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 const MARGIN = 40;
 
+const accessToken = "af3aedbb148f460f9ca4754a3780fbae"
+const baseUrl = "https://api.api.ai/v1/"
+
 class ChatScreen extends React.Component {
+    async _getMessage( message ){
+      let reponse = await fetch(baseUrl + 'query', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer' + accessToken
+        },
+        body: JSON.stringify({
+          query: message, 
+          lang: "en", 
+          sessionId: "genie"
+        })
+      })
+      let body = await response.json();
+      console.log(body);
+      return "test"
+    }
+
     render() {
         const steps = [
             {
@@ -24,8 +46,8 @@ class ChatScreen extends React.Component {
             },
             {
                 id: '1',
-                message: ({ previousValue, steps }) => String(previousValue),
-                trigger: '2',
+                message: ({ previousValue, steps }) => this._getMessage(previousValue),
+                trigger: '2'
             },
             {
                 id: '2',

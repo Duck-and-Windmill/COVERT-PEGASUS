@@ -60,7 +60,6 @@ class AppScreen extends Component {
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log('Account Info: ', responseJson);
         this._fetchPortfolio('https://api.robinhood.com/portfolios/' + responseJson.results[0].account_number + '/');
         this._fetchPositions(responseJson.results[0].positions);
       })
@@ -79,7 +78,6 @@ class AppScreen extends Component {
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log(url, responseJson);
         this.setState({ equity: responseJson.equity });
       })
       .catch((error) => {
@@ -97,7 +95,6 @@ class AppScreen extends Component {
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log(url, responseJson);
         var finalItems = [];
         responseJson.results.forEach(function(position, index, arr) {
           arr[index].key = index;
@@ -126,7 +123,6 @@ class AppScreen extends Component {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-          console.log("Instruments", responseJson);
           var pos = {
             quantity: position.quantity,
             symbol: responseJson.symbol,
@@ -163,7 +159,6 @@ class AppScreen extends Component {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-          console.log("Quotes", responseJson);
 
           positions.forEach(function(position, index){
             responseJson.results.filter(function(instrument){
@@ -223,38 +218,6 @@ class AppScreen extends Component {
         var merged = [].concat.apply([], reduced);
 
         this.setState({ historicals: merged });
-
-        /*var hist = _.groupBy(merged, "x");
-
-        var finalCleaned = []
-
-        Object.keys(hist).forEach(function(date, index, arr) {
-          var dateFinal = {
-            close: 0,
-            high: 0,
-            low: 0,
-            open: 0,
-            x: date
-          }
-
-          hist[date].forEach(function(info, i){
-            dateFinal.close += parseInt(info.close)
-            dateFinal.high += parseInt(info.high)
-            dateFinal.low += parseInt(info.low)
-            dateFinal.open += parseInt(info.open)
-
-            console.log(dateFinal)
-
-            if (i >= hist[date].length) {
-              finalCleaned.push(dateFinal)
-            } else if (i >= (hist[date].length - 1) && index >= (Object.keys(hist).length - 1)) {
-              self.setState({ historicals: finalCleaned });
-
-              console.log('historicals', finalCleaned);
-            }
-          })
-
-        });*/
 
       })
       .catch((error) => {

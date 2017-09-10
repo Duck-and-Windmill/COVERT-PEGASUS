@@ -15,7 +15,7 @@ class HomeScreen extends React.Component {
                     title='Genie Chat'
                     onPress = {() => navigate('Chat')}
                 >
-                <Image style={genieButtStyles.button} source={require('./genie-butt.png')}/>
+                <Image style={genieButtStyles.button} source={require('./assets/icons/genie-butt.png')}/>
                 </TouchableHighlight>
 
 

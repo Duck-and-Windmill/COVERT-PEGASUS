@@ -32,16 +32,25 @@ class ChatScreen extends React.Component {
         const steps = [
             {
                 id: '0',
-                message: 'Welcome to react chatbot!',
-                trigger: '1',
+                message: 'Welcome to Genie. How can I help?',
+                trigger: '2',
             },
             {
                 id: '1',
-                message: 'Bye!',
-                end: true,
+                message: ({ previousValue, steps }) => String(previousValue),
+                trigger: '2',
+            },
+            {
+                id: '2',
+                user: true,
+                trigger: '1',
             },
         ];
-        return <ChatBot steps={steps} />
+        return <ChatBot
+            steps={steps}
+            placeholder='Talk to genie...'
+            botAvatar='https://img.buzzfeed.com/buzzfeed-static/static/2016-01/21/13/campaign_images/webdr04/how-well-do-you-know-the-genie-from-aladdin-2-5437-1453401463-9_dblbig.jpg'
+            />
     }
 }
 

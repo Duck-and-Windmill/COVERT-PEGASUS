@@ -42,7 +42,46 @@ export default class ControlPanel extends Component {
       ).start();
 
       setTimeout(() => {
-          Actions.pop();
+          Actions.pop()
+          Actions.loginScreen();
+      }, 500);
+  }
+
+  _home() {
+      if (this.state.isLoading) return;
+
+      this.setState({ isLoading: true });
+
+      Animated.timing(
+          this.growAnimated,
+          {
+              toValue: 1,
+              duration: 300,
+              easing: Easing.linear,
+          }
+      ).start();
+
+      setTimeout(() => {
+          Actions.appScreen();
+      }, 500);
+  }
+
+  _settings() {
+      if (this.state.isLoading) return;
+
+      this.setState({ isLoading: true });
+
+      Animated.timing(
+          this.growAnimated,
+          {
+              toValue: 1,
+              duration: 300,
+              easing: Easing.linear,
+          }
+      ).start();
+
+      setTimeout(() => {
+          Actions.settingsScreen();
       }, 500);
   }
 
@@ -60,14 +99,14 @@ export default class ControlPanel extends Component {
           </Text>
           <Button
             onPress={() => {
-              console.log("Home")
+              this._home();
             }}
             title="Home"
             style={styles.button}
           />
           <Button
             onPress={() => {
-              console.log("Settings")
+              this._settings();
             }}
             title="Settings"
             style={styles.button}
@@ -98,7 +137,7 @@ const styles = StyleSheet.create({
   },
   controlPanel: {
     flex: 1,
-    backgroundColor:'transparent',
+    backgroundColor:'#333333',
   },
   button: {
     backgroundColor: '#25c5a1'

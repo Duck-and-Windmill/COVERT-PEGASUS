@@ -20,7 +20,18 @@ import { VictoryBar } from "victory-native";
 
 import ControlPanel from './ControlPanel'
 
+import { 
+  setToken,
+  setUsername,
+  setPassword,
+  setMfa,
+  toggleShowMfa,
+  setErrorMsg,
+  setPositions
+} from '../actions'
+
 const SIZE = 40;
+import bgSrc from '../images/wallpaper.png';
 
 class AppScreen extends Component {
     constructor() {
@@ -28,7 +39,8 @@ class AppScreen extends Component {
 
         this.state = {
             isLoading: false,
-            positions: []
+            positions: [],
+            equity: ''
         };
         this.growAnimated = new Animated.Value(0);
     }
@@ -46,8 +58,26 @@ class AppScreen extends Component {
       .then((response) => response.json())
       .then((responseJson) => {
         console.log('Account Info: ', responseJson);
-        this._fetchWithToken('https://api.robinhood.com/portfolios/' + responseJson.results[0].account_number + '/');
+        this._fetchPortfolio('https://api.robinhood.com/portfolios/' + responseJson.results[0].account_number + '/');
         this._fetchPositions(responseJson.results[0].positions);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
+
+    _fetchPortfolio(url) {
+      fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Token ' + this.props.token
+        }
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(url, responseJson);
+        this.setState({ equity: responseJson.equity });
       })
       .catch((error) => {
         console.error(error);
@@ -65,10 +95,111 @@ class AppScreen extends Component {
       .then((response) => response.json())
       .then((responseJson) => {
         console.log(url, responseJson);
+        var finalItems = [];
         responseJson.results.forEach(function(position, index, arr) {
-          arr[index].key = index
+          arr[index].key = index;
+          if (arr[index].quantity > 0) {
+            finalItems.push(arr[index]);
+          }
         });
-        this.setState({ positions: responseJson.results });
+
+        this._fetchSymbols(finalItems);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
+
+    _fetchSymbols(positions) {
+      var symbols = [];
+      var self = this;
+
+      positions.forEach(function(position, index) {
+        fetch(position.instrument, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          console.log("Instruments", responseJson);
+          var pos = {
+            quantity: position.quantity,
+            symbol: responseJson.symbol,
+            key: index
+          }
+
+          symbols.push(pos);
+
+          if(index >= (positions.length - 1)) {
+            self._fetchQuotes(symbols);
+          }
+
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      });
+    }
+
+    _fetchQuotes(positions) {
+      var query = positions.map(function(position){
+          return position.symbol;
+      }).join(",");
+
+      var finalDataSet = []
+
+      var self = this;
+
+      fetch('https://api.robinhood.com/quotes/?symbols=' + query, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          console.log("Quotes", responseJson);
+
+          positions.forEach(function(position, index){
+            responseJson.results.filter(function(instrument){
+              if (instrument !== null && instrument.symbol === position.symbol) {
+                var pos = {
+                  quantity: position.quantity,
+                  symbol: position.symbol,
+                  key: position.index,
+                  price: instrument.last_trade_price
+                }
+
+                finalDataSet.push(pos);
+              }
+              if (index >= (positions.length - 1)) {
+                self.props.dispatch(setPositions(finalDataSet))
+                self._fetchHistoricals();
+              }
+            });
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+
+    _fetchHistoricals() {
+      var query = this.props.positions.map(function(position){
+          return position.symbol;
+      }).join(",");
+
+      fetch('https://api.robinhood.com/quotes/historicals/?symbols='+query+'&interval=week&span=5year', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log('historicals', responseJson);
       })
       .catch((error) => {
         console.error(error);
@@ -92,36 +223,36 @@ class AppScreen extends Component {
       });
     }
 
-    closeControlPanel = () => {
-      this._drawer.close()
-    };
-    openControlPanel = () => {
-      this._drawer.open()
-    };
-
     render() {
         return (
               <SideMenu 
                 menu={<ControlPanel/>}
               >
-                <View style={styles.backgroundContainer}>
-                  <View style={styles.contentContainer}>
-                    <Card>
-                      <VictoryBar/>
-                    </Card>
-                  </View>
+                <Image style={styles.picture} source={bgSrc}>
+                  <View style={styles.backgroundContainer}>
+                    <View style={styles.contentContainer}>
+                      <Card>
+                        <VictoryBar/>
+                      </Card>
+                    </View>
 
-                  <View style={styles.contentContainer}>
-                    <Card>
-                      <FlatList
-                        data={this.state.positions}
-                        extraData={this.state}
-                        keyExtractor={this._keyExtractor}
-                        renderItem={({item}) => <Text style={styles.item}>{item.quantity}</Text>}
-                      />
-                    </Card>
+                    <View style={styles.contentContainer}>
+                      <Card>
+                        <FlatList
+                          data={this.props.positions}
+                          extraData={this.state}
+                          keyExtractor={this._keyExtractor}
+                          renderItem={({item}) => 
+                            <View style={styles.item}>
+                              <Text>{item.symbol} ({Math.round(item.quantity)})</Text>
+                              <Text>${item.price}</Text>
+                            </View>
+                          }
+                        />
+                      </Card>
+                    </View>
                   </View>
-                </View>
+                </Image>
             </SideMenu>
                 
         );
@@ -136,14 +267,29 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
+    picture: {
+        flex: 1,
+        width: null,
+        height: null,
+        resizeMode: 'cover',
+        flexDirection: 'column',
+        justifyContent: 'space-around',
+    },
+    item: {
+      padding: 10,
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between'
+    },
     backgroundContainer: {
       width: DEVICE_WIDTH,
       height: DEVICE_HEIGHT,
-      backgroundColor: '#ffffff',
+      backgroundColor: 'transparent',
     },
     contentContainer: {
       margin: 20,
       marginTop: 40,
+      padding: 10,
       flex: 1,
     },
     button: {
@@ -186,7 +332,8 @@ const drawerStyles = {
 }
 
 const mapStateToProps = (state) => ({
-  token: state.token
+  token: state.token,
+  positions: state.positions
 })
 
 export default connect(

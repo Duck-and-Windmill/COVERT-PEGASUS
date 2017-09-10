@@ -4,6 +4,7 @@ import { COLOR, ThemeProvider } from 'react-native-material-ui';
 
 import LoginScreen from './LoginScreen';
 import AppScreen from './AppScreen';
+import SettingsScreen from './SettingsScreen'
 
 const uiTheme = {
     palette: {
@@ -30,6 +31,11 @@ export default class Main extends React.Component {
             />
             <Scene key="appScreen"
               component={AppScreen}
+              animation='fade'
+              hideNavBar={true}
+            />
+            <Scene key="settingsScreen"
+              component={SettingsScreen}
               animation='fade'
               hideNavBar={true}
             />

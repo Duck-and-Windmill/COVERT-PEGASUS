@@ -33,6 +33,13 @@ export const setErrorMsg = errorMsg => {
   }
 }
 
+export const setPositions = positions => {
+  return {
+    type: 'SET_POSITIONS',
+    positions
+  }
+}
+
 export const toggleShowMfa = bool => {
   return {
     type: 'TOGGLE_SHOW_MFA',

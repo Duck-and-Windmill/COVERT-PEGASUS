@@ -1,5 +1,5 @@
 import React from 'react';
-import { /*Dimensions*/, AppRegistry, StyleSheet, Text, View, Image, Navigator, TouchableHighlight, Button, TextInput } from 'react-native';
+import { /*Dimensions,*/ AppRegistry, StyleSheet, Text, View, Image, Navigator, TouchableHighlight, Button, TextInput } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -11,71 +11,21 @@ import Main from './src/components/Main';
 const store = createStore(genieApp)
 /*const { height, width } = Dimensions.get('window');*/
 
-class HomeScreen extends React.Component {
-    static navigationOptions = {
+export default class App extends React.Component {
+    /*static navigationOptions = {
         title: 'Welcome. Plz log in',
-    };
+    };*/
     render() {
-        const { navigate } = this.props.navigation;
+        /*const { navigate } = this.props.navigation;*/
         return (
             <Provider store={store}>
                <Main />
             </Provider>
-          
-            <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end' }}>
-                <TouchableHighlight
-                    title='Genie Chat'
-                    onPress = {() => navigate('Chat')}
-                >
-                <Image style={genieButtStyles.button} source={require('./assets/icons/genie-butt.png')}/>
-                </TouchableHighlight>
 
 
-            </View>
         );
     }
 }
-
-class ChatScreen extends React.Component {
-    static navigationOptions = {
-        title: 'Genie Chat',
-    }
-    render() {
-        const steps = [
-            {
-                id: '0',
-                message: 'Welcome to Genie. How can I help?',
-                trigger: '2',
-            },
-            {
-                id: '1',
-                message: ({ previousValue, steps }) => String(previousValue),
-                trigger: '2',
-            },
-            {
-                id: '2',
-                user: true,
-                trigger: '1',
-            },
-        ];
-        return <ChatBot
-            steps={steps}
-            placeholder='Talk to Genie...'
-            botAvatar='https://img.buzzfeed.com/buzzfeed-static/static/2016-01/21/13/campaign_images/webdr04/how-well-do-you-know-the-genie-from-aladdin-2-5437-1453401463-9_dblbig.jpg'
-            botBubbleColor='#25c5a1'
-            /*contentStyle={contentOverride}*/
-            />
-    }
-}
-
-
-
-const App = StackNavigator({
-    Home: { screen: HomeScreen },
-    Chat: { screen: ChatScreen },
-});
-
-export default App;
 
 AppRegistry.registerComponent('App', () => App);
 

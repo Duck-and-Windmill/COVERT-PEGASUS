@@ -17,6 +17,25 @@ const uiTheme = {
 };
 
 export default class Main extends React.Component {
+    _chat() {
+      if (this.state.isLoading) return;
+
+      this.setState({ isLoading: true });
+
+      Animated.timing(
+          this.growAnimated,
+          {
+              toValue: 1,
+              duration: 300,
+              easing: Easing.linear,
+          }
+      ).start();
+
+      setTimeout(() => {
+          Actions.ChatScreen();
+      }, 500);
+  }
+
   render() {
     return (
       <ThemeProvider uiTheme={uiTheme}>
@@ -34,6 +53,15 @@ export default class Main extends React.Component {
               hideNavBar={true}
             />
           </Scene>
+
+          <Button
+            onPress={() => {
+              this._chatBot();
+            }}
+            title="ChatBot"
+            style={styles.button}
+            />
+
         </Router>
       </ThemeProvider>
     );

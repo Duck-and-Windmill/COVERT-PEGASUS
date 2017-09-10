@@ -11,7 +11,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-20.0.0.tar.gz",
     "react-native-chatbot": "0.0.1-alpha.7",
     "react-navigation": "^1.0.0-beta.11",
-    "styled-components": "^2.1.2"
+    "styled-components": "^2.1.2",
     "react-native-drawer": "^2.5.0",
     "react-native-material-kit": "^0.4.1",
     "react-native-material-ui": "^1.13.0",

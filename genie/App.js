@@ -1,7 +1,9 @@
 import React from 'react';
-import { AppRegistry, StyleSheet, Text, View, Image, Navigator, TouchableHighlight, Button, TextInput } from 'react-native';
+import { /*Dimensions*/, AppRegistry, StyleSheet, Text, View, Image, Navigator, TouchableHighlight, Button, TextInput } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import ChatBot from 'react-native-chatbot';
+
+/*const { height, width } = Dimensions.get('window');*/
 
 class HomeScreen extends React.Component {
     static navigationOptions = {
@@ -48,8 +50,10 @@ class ChatScreen extends React.Component {
         ];
         return <ChatBot
             steps={steps}
-            placeholder='Talk to genie...'
+            placeholder='Talk to Genie...'
             botAvatar='https://img.buzzfeed.com/buzzfeed-static/static/2016-01/21/13/campaign_images/webdr04/how-well-do-you-know-the-genie-from-aladdin-2-5437-1453401463-9_dblbig.jpg'
+            botBubbleColor='#25c5a1'
+            /*contentStyle={contentOverride}*/
             />
     }
 }
@@ -65,14 +69,20 @@ AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
 
 
 
-
-class Message extends React.Component {
-    render() {
-        return (
-            <Text>Hello bois</Text>
-        );
+/*const contentOverride = StyleSheet.create({
+    contentStyle: {
+        height: height - 50,
+        backgroundColor: '#326945',
     }
-}
+});
+
+Do this stuff to make the background colors change:
+
+chatBotContainer.js line 4 to #326945
+
+chatbot.js line 488 to #326945
+
+*/
 
 const genieButtStyles = StyleSheet.create({
     button: {
@@ -81,13 +91,4 @@ const genieButtStyles = StyleSheet.create({
         padding: 10,
         right: 0,
     }
-});
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
 });

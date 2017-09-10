@@ -23,7 +23,7 @@ var msgid = 2;
 
 class ChatScreen extends React.Component {
     _getMessage( message ){
-      fetch(baseUrl + 'query', {
+      fetch(baseUrl + 'query?v=20170831', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -38,19 +38,36 @@ class ChatScreen extends React.Component {
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log("res", responseJson.result.speech);
-        var messages = [
-          {
-            _id: ++msgid,
-            "createdAt": new Date(),
-            "text": responseJson.result.speech,
-            "user": {
-              "_id": 2,
-              name: 'Genie',
-              avatar: 'https://img.buzzfeed.com/buzzfeed-static/static/2016-01/21/13/campaign_images/webdr04/how-well-do-you-know-the-genie-from-aladdin-2-5437-1453401463-9_dblbig.jpg',
-            },
-          }
-        ]
+        console.log("res", responseJson);
+        if (responseJson.result.fulfillment.data && responseJson.result.fulfillment.data.gif) {
+          var messages = [
+            {
+              _id: ++msgid,
+              "createdAt": new Date(),
+              "text": responseJson.result.fulfillment.speech || responseJson.result.speech,
+              "image": responseJson.result.fulfillment.data.gif,
+              "user": {
+                "_id": 2,
+                name: 'Genie',
+                avatar: 'https://img.buzzfeed.com/buzzfeed-static/static/2016-01/21/13/campaign_images/webdr04/how-well-do-you-know-the-genie-from-aladdin-2-5437-1453401463-9_dblbig.jpg',
+              },
+            }
+          ]
+        } else {
+          var messages = [
+            {
+              _id: ++msgid,
+              "createdAt": new Date(),
+              "text": responseJson.result.fulfillment.speech || responseJson.result.speech,
+              "user": {
+                "_id": 2,
+                name: 'Genie',
+                avatar: 'https://img.buzzfeed.com/buzzfeed-static/static/2016-01/21/13/campaign_images/webdr04/how-well-do-you-know-the-genie-from-aladdin-2-5437-1453401463-9_dblbig.jpg',
+              },
+            }
+          ]
+        }
+          
         this.setState((previousState) => ({
           messages: GiftedChat.append(previousState.messages, messages),
         }));

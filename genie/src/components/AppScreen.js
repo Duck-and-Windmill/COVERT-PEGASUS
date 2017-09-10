@@ -6,10 +6,15 @@ import {
     TouchableOpacity,
     Animated,
     Easing,
-    Button
+    Button,
+    FlatList,
+    Text
 } from 'react-native';
 import { Actions, ActionConst } from 'react-native-router-flux';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
+import Drawer from 'react-native-drawer';
+
+import ControlPanel from './ControlPanel'
 
 const SIZE = 40;
 
@@ -19,11 +24,14 @@ class AppScreen extends Component {
 
         this.state = {
             isLoading: false,
+            positions: []
         };
 
         this._onPress = this._onPress.bind(this);
         this.growAnimated = new Animated.Value(0);
     }
+
+    _keyExtractor = (item, index) => item.id;
 
     _onPress() {
         if (this.state.isLoading) return;
@@ -45,7 +53,6 @@ class AppScreen extends Component {
     }
 
     _getAccount() {
-      console.log(this.props)
       fetch('https://api.robinhood.com/accounts/', {
         method: 'GET',
         headers: {
@@ -55,9 +62,27 @@ class AppScreen extends Component {
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log(responseJson);
-        this._fetchWithToken(responseJson.results[0].portfolio);
-        this._fetchWithToken(responseJson.results[0].positions);
+        console.log('Account Info: ', responseJson);
+        this._fetchWithToken('https://api.robinhood.com/portfolios/' + responseJson.results[0].account_number + '/');
+        this._fetchPositions(responseJson.results[0].positions);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
+
+    _fetchPositions(url) {
+      fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Token ' + this.props.token
+        }
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(url, responseJson);
+        this.setState({ positions: responseJson.results });
       })
       .catch((error) => {
         console.error(error);
@@ -74,12 +99,19 @@ class AppScreen extends Component {
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log(responseJson);
+        console.log(url, responseJson);
       })
       .catch((error) => {
         console.error(error);
       });
     }
+
+    closeControlPanel = () => {
+      this._drawer.close()
+    };
+    openControlPanel = () => {
+      this._drawer.open()
+    };
 
     render() {
         const changeScale = this.growAnimated.interpolate({
@@ -88,22 +120,38 @@ class AppScreen extends Component {
         });
 
         return (
-            <View style={styles.container}>
-                <Button
-                onPress={() => {
-                  this._getAccount()
-                }}
-                title="Submit"
-                color="#841584"
-                accessibilityLabel="Learn more about this purple button"
+            <Drawer
+              type="overlay"
+              content={<Text>Hello</Text>}
+              tapToClose={true}
+              openDrawerOffset={0.2}
+              panCloseMask={0.2}
+              closedDrawerOffset={-3}
+              styles={drawerStyles}
+              tweenHandler={(ratio) => ({
+                main: { opacity:(2-ratio)/2 }
+              })}
+              >
+                <FlatList
+                  data={this.state.positions}
+                  extraData={this.state}
+                  keyExtractor={this._keyExtractor}
+                  renderItem={({item}) => <Text style={styles.item}>{item.quantity}</Text>}
                 />
-                <TouchableOpacity onPress={this._onPress}
-                    style={styles.button}
-                    activeOpacity={1}>
-                </TouchableOpacity>
-                <Animated.View style={[ styles.circle, {transform: [{scale: changeScale}]} ]} />
-            </View>
+                <View style={styles.container}>
+                    <TouchableOpacity onPress={this._onPress}
+                        style={styles.button}
+                        activeOpacity={1}>
+                    </TouchableOpacity>
+                    <Animated.View style={[ styles.circle, {transform: [{scale: changeScale}]} ]} />
+                </View>
+            </Drawer>
+                
         );
+    }
+
+    componentDidMount() {
+      this._getAccount();
     }
 }
 
@@ -121,20 +169,25 @@ const styles = StyleSheet.create({
         height: SIZE,
         borderRadius: 100,
         zIndex: 99,
-        backgroundColor: '#F035E0',
+        backgroundColor: '#25c5a1',
     },
     circle: {
         height: SIZE,
         width: SIZE,
         marginTop: -SIZE,
         borderRadius: 100,
-        backgroundColor: '#F035E0',
+        backgroundColor: '#25c5a1',
     },
     image: {
         width: 24,
         height: 24,
     }
 });
+
+const drawerStyles = {
+  drawer: { shadowColor: '#000000', shadowOpacity: 0.8, shadowRadius: 3},
+  main: {paddingLeft: 3},
+}
 
 const mapStateToProps = (state) => ({
   token: state.token

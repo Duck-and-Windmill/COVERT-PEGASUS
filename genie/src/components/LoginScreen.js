@@ -17,6 +17,11 @@ import { Actions, ActionConst } from 'react-native-router-flux';
 import { connect } from 'react-redux'
 import { setToken } from '../actions'
 
+import Wallpaper from './Wallpaper';
+import LoginForm from './LoginForm';
+import LoginSubmit from './LoginSubmit';
+import Logo from './Logo';
+
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 const MARGIN = 40;
@@ -43,7 +48,6 @@ class LoginScreen extends React.Component {
   }
 
   _robinhoodLogin(user, pass, mfa) {
-    console.log(this.props)
     if (this.state.isLoading) return;
 
     var credentials = {
@@ -55,6 +59,8 @@ class LoginScreen extends React.Component {
       credentials.mfa_code = mfa;
     }
 
+
+    this.setState({ isLoading: true });
     fetch('https://api.robinhood.com/api-token-auth/', {
       method: 'POST',
       headers: {
@@ -65,26 +71,29 @@ class LoginScreen extends React.Component {
     })
     .then((response) => response.json())
     .then((responseJson) => {
-      console.log(responseJson);
       if (responseJson.mfa_required) {
         this._toggleShowMfa();
+        this.setState({ isLoading: false });
       } else if (responseJson.token) {
         this.props.dispatch(setToken(responseJson.token));
 
-        console.log(this.props)
-
-        /*Animated.timing(
+        Animated.timing(
           this.buttonAnimated,
           {
             toValue: 1,
             duration: 200,
             easing: Easing.linear
           }
-        ).start();*/
+        ).start();
 
+        this._onGrow();
 
-        this.setState({ isLoading: true });
-        Actions.appScreen();
+        setTimeout(() => {
+          Actions.appScreen();
+          this.setState({ isLoading: false });
+          this.buttonAnimated.setValue(0);
+          this.growAnimated.setValue(0);
+        }, 300);
       }
     })
     .catch((error) => {
@@ -92,61 +101,27 @@ class LoginScreen extends React.Component {
     });
   }
 
+  _onGrow() {
+    Animated.timing(
+      this.growAnimated,
+      {
+        toValue: 1,
+        duration: 200,
+        easing: Easing.linear
+      }
+    ).start();
+  }
+
   render() {
     return (
-      <View style={styles.container}>
-        <MKTextField
-          placeholder="Username"
-          style={styles.textfield}
-          ref= {(el) => { this.username = el; }}
-          onChangeText={(username) => this.setState({username})}
-          value={this.state.username}
-        />
-        <MKTextField
-          placeholder="Password"
-          password={true}
-          style={styles.textfield}
-          ref= {(el) => { this.password = el; }}
-          onChangeText={(password) => this.setState({password})}
-          value={this.state.password}
-        />
-        {this.state.showMfa &&
-          <MKTextField
-            placeholder="MFA"
-            style={styles.textfield}
-            ref= {(el) => { this.mfa = el; }}
-            onChangeText={(mfa) => this.setState({mfa})}
-            value={this.state.mfa}
-          />
-        }
-        <Button
-          onPress={() => {
-            if (this.state.showMfa) {
-              this._robinhoodLogin(this.state.username, this.state.password, this.state.mfa);
-            } else {
-              this._robinhoodLogin(this.state.username, this.state.password); 
-            }
-          }}
-          title="Submit"
-          color="#841584"
-          accessibilityLabel="Learn more about this purple button"
-        />
-      </View>
+      <Wallpaper >
+        <Logo />
+        <LoginForm />
+        <LoginSubmit/>
+      </Wallpaper>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  textfield: {
-    width: 300
-  }
-});
 
 const mapStateToProps = (state) => ({
   token: state.token

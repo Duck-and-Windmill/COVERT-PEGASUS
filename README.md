@@ -1,10 +1,6 @@
-# COVERT-PEGASUS
+# PROJECT: COVERT-PEGASUS (aka Genie)
 
 Duck and Windmill's PennApps XVI submission.
-
-# PROJECT: VIOLET UNICORN (aka Delphi)
-
-Duck and Windmill's HackRU Fall 2017 submission.
 
 ## Inspiration
 

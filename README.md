@@ -1,4 +1,4 @@
-# PROJECT: COVERT-PEGASUS (aka Genie)
+# PROJECT: COVERT PEGASUS (aka Genie)
 
 Duck and Windmill's PennApps XVI submission.
 
